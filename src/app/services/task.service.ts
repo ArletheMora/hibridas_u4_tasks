@@ -17,6 +17,10 @@ export class TaskService {
     return this.tasks;
   }
 
+  public getCompleteTasks():string[] {
+    return this.tasksComplete;
+  }
+
   public addTask(newTask:string) {
     this.tasks.push(newTask);
   }
@@ -25,8 +29,17 @@ export class TaskService {
     this.tasks.splice(pos, 1);
   }
 
+  public removeCompleteTask(pos:number){
+      this.tasksComplete.splice(pos,1);
+  }
+
   public completeTask(pos:number){
     this.tasksComplete.push(this.tasks[pos]);
     this.tasks.splice(pos, 1);
+  }
+
+  public uncompleteTask(pos:number){
+    this.tasks.push(this.tasksComplete[pos]);
+    this.tasksComplete.splice(pos,1);
   }
 }
