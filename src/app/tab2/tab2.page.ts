@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Task } from '../models/task';
 import { TaskService } from './../services/task.service';
 
 @Component({
@@ -7,23 +8,23 @@ import { TaskService } from './../services/task.service';
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page {
-
-  public tasksComplete: string[];
+  public tasks: Task[];
+  //public tasksComplete: string[];
 
   constructor(
     private taskService:TaskService
   ) {
-    this.tasksComplete = this.taskService.getCompleteTasks();
+    this.taskService.getCompleteTasks().subscribe((res) => {
+      this.tasks = res;
+    });
   }
 
-  public removeCompleteTask(pos:number) {
-    this.taskService.removeCompleteTask(pos);
-    this.tasksComplete = this.taskService.getCompleteTasks();
+  public removeTask(id:string){
+    this.taskService.removeTask(id)
   }
 
-  public uncompleteTask(pos:number) {
-    this.taskService.uncompleteTask(pos);
-    this.tasksComplete = this.taskService.getCompleteTasks();
+  public uncompleteTask(id:string) {
+    this.taskService.unCompleteTask(id);
   }
 
 }

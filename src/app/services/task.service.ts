@@ -1,8 +1,8 @@
+import { Task } from './../models/task';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Task } from '../models/task';
 
 @Injectable({
   providedIn: 'root'
@@ -25,34 +25,60 @@ export class TaskService {
           const data = a.payload.doc.data() as Task;
           const id = a.payload.doc.id;
           return {id, ...data };
-        })
+        });
+      })
+    )
+  }
+  public getNoCompleteTasks(): Observable<Task[]> {
+    //return this.tasks;
+    return this.firestore.collection('tasks').snapshotChanges().pipe(
+      map(actions => {
+        return actions.map(a => {
+          const data = a.payload.doc.data() as Task;
+          const id = a.payload.doc.id;
+          return {id, ...data };
+        }).filter(task=>task.complete==false);
+      })
+    )
+  }
+  public getCompleteTasks(): Observable<Task[]> {
+    //return this.tasks;
+    return this.firestore.collection('tasks').snapshotChanges().pipe(
+      map(actions => {
+        return actions.map(a => {
+          const data = a.payload.doc.data() as Task;
+          const id = a.payload.doc.id;
+          return {id, ...data };
+        }).filter(task=>task.complete==true);
       })
     )
   }
 
-  public getCompleteTasks():string[] {
+  /* public getCompleteTasks():string[] {
     return this.tasksComplete;
+  } */
+
+  public addTask(newTask:Task) {
+    //this.tasks.push(newTask);
+    this.firestore.collection('tasks').add(newTask);
   }
 
-  public addTask(newTask:string) {
-    this.tasks.push(newTask);
+  public removeTask(id:string) {
+    //this.tasks.splice(pos, 1);
+    this.firestore.collection('tasks').doc(id).delete();
   }
 
-  public removeTask(pos:number) {
-    this.tasks.splice(pos, 1);
-  }
-
-  public removeCompleteTask(pos:number){
+  /* public removeCompleteTask(pos:number){
       this.tasksComplete.splice(pos,1);
+  } */
+
+  public completeTask(id:string) {
+    //this.tasksComplete.push(this.tasks[pos]);
+    //this.tasks.splice(pos, 1);
+    this.firestore.collection('tasks').doc(id).update({complete:true});
   }
 
-  public completeTask(pos:number) {
-    this.tasksComplete.push(this.tasks[pos]);
-    this.tasks.splice(pos, 1);
-  }
-
-  public uncompleteTask(pos:number){
-    this.tasks.push(this.tasksComplete[pos]);
-    this.tasksComplete.splice(pos,1);
+  public unCompleteTask(id:string){
+    this.firestore.collection('tasks').doc(id).update({complete:false});
   }
 }
